@@ -17,6 +17,7 @@ export const PaperViewer: React.FC<{ src: string; id: string }> = ({
       right: theme.spacing(2),
     },
   }))
+
   const classes = useStyles()
   return (
     <Container fixed>
