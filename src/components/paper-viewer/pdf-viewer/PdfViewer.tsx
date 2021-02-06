@@ -5,17 +5,18 @@ import { range } from 'lodash'
 import styles from './PaperViewer.module.scss'
 
 // eslint-disable-next-line react/prop-types
-export const PdfViewer: React.FC<{ scale: number }> = ({ scale }) => {
+export const PdfViewer: React.FC<{ scale: number; src: string }> = ({
+  // eslint-disable-next-line react/prop-types
+  scale,
+  // eslint-disable-next-line react/prop-types
+  src,
+}) => {
   const [pageNumber, setPageNumber] = useState(1)
   const [pdfFile, setPdfFile] = useState<Uint8Array | null>(null)
   // eslint-disable-next-line no-console
   useEffect(() => {
     const fetchData = async () => {
-      const arrBuf = new Uint8Array(
-        await (
-          await fetch('https://arxiv.org/pdf/1701.00145.pdf')
-        ).arrayBuffer()
-      )
+      const arrBuf = new Uint8Array(await (await fetch(src)).arrayBuffer())
       setPdfFile(arrBuf)
     }
     fetchData()
@@ -45,4 +46,5 @@ export const PdfViewer: React.FC<{ scale: number }> = ({ scale }) => {
 
 PdfViewer.defaultProps = {
   scale: 1.0,
+  src: 'https://arxiv.org/pdf/1701.00145.pdf',
 }
