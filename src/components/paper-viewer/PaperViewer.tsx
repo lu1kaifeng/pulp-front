@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Button, ButtonGroup, Container, makeStyles } from '@material-ui/core'
-import { Help, ZoomIn, ZoomOut } from '@material-ui/icons'
+import { ZoomIn, ZoomOut } from '@material-ui/icons'
 import { PdfViewer } from './pdf-viewer/PdfViewer'
 
 export const PaperViewer: React.FC<{ src: string; id: string }> = ({
