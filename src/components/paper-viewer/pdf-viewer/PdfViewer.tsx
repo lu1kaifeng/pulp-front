@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Document, Page } from 'react-pdf'
 import { Container } from '@material-ui/core'
 import { range } from 'lodash'
-import styles from './PaperViewer.module.scss'
+import './PaperViewer.scss'
 
 // eslint-disable-next-line react/prop-types
 export const PdfViewer: React.FC<{ scale: number; src: string }> = ({
@@ -23,9 +23,10 @@ export const PdfViewer: React.FC<{ scale: number; src: string }> = ({
   }, [])
 
   return (
-    <Container fixed>
+    <Container className='react-pdf'>
       {pdfFile !== null ? (
         <Document
+
           file={{ data: pdfFile }}
           renderMode="svg"
           onLoadSuccess={(pdf) => {
@@ -34,7 +35,7 @@ export const PdfViewer: React.FC<{ scale: number; src: string }> = ({
           options={{ workerSrc: 'pdf.worker.js' }}
         >
           {range(1, pageNumber + 1).map((p) => {
-            return <Page scale={scale} className={styles.page} pageNumber={p} />
+            return <Page className='page' scale={scale}  pageNumber={p} />
           })}
         </Document>
       ) : (
