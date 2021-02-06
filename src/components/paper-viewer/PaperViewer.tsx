@@ -1,55 +1,31 @@
-import React, { Fragment } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
-import { actionTypes, selectors } from '../../features/counter'
+import React, { useEffect, useState } from 'react'
+import { Document, Page } from 'react-pdf'
 
-const Counter: React.FC = () => {
-  const count = useSelector(selectors.getCountValue)
-  const dispatch = useDispatch()
-
+export const PaperViewer: React.FC = () => {
+  const [pageNumber] = useState(1)
+  const [pdfFile, setPdfFile] = useState<Uint8Array | null>(null)
+  // eslint-disable-next-line no-console
+  useEffect(() => {
+    const fetchData = async () => {
+      const arrBuf = new Uint8Array(
+        await (
+          await fetch('https://arxiv.org/pdf/1701.00145.pdf')
+        ).arrayBuffer()
+      )
+      setPdfFile(arrBuf)
+      // eslint-disable-next-line global-require
+    }
+    fetchData()
+  }, [])
   return (
-    <Fragment>
-      <div className="row">
-        <div className="col s12 m6">
-          <div className="card blue-grey darken-1">
-            <div className="card-content white-text">
-              <span className="card-title">Counter component</span>
-              <h4>
-                Counter: <strong>{count}</strong>
-              </h4>
-              <p>
-                Here you can increment and decrement counter value using buttons
-                below. All the state updates are performed via redux actions.
-              </p>
-            </div>
-            <div className="card-action">
-              <div className="group">
-                <button
-                  className="waves-effect waves-teal btn-flat blue"
-                  type="button"
-                  data-qa="decrement-counter"
-                  onClick={() =>
-                    dispatch({ type: actionTypes.DECREMENT_COUNTER })
-                  }
-                >
-                  decrement
-                </button>
-                <button
-                  className="waves-effect waves-teal btn-flat red"
-                  type="button"
-                  data-qa="increment-counter"
-                  onClick={() =>
-                    dispatch({ type: actionTypes.INCREMENT_COUNTER })
-                  }
-                >
-                  increment
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </Fragment>
+    <div>
+      {pdfFile !== null ? (
+        <Document file={{ data: pdfFile }} options={{workerSrc: "pdf.worker.js"}}>
+          <Page pageNumber={pageNumber} />
+        </Document>
+      ) : (
+        <div />
+      )}
+    </div>
   )
 }
-
-export default Counter
