@@ -30,9 +30,6 @@ export const PaperViewer: React.FC<{ src: string; id: string }> = ({
         variant="contained"
       >
         <Button>
-          <Help />
-        </Button>
-        <Button>
           <ZoomIn onClick={() => SetScale(scale + 0.25)} />
         </Button>
         <Button>
