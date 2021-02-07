@@ -20,13 +20,12 @@ export const PdfViewer: React.FC<{ scale: number; src: string }> = ({
       setPdfFile(arrBuf)
     }
     fetchData()
-  }, [])
+  }, [src])
 
   return (
-    <Container className='react-pdf'>
+    <Container className="react-pdf">
       {pdfFile !== null ? (
         <Document
-
           file={{ data: pdfFile }}
           renderMode="svg"
           onLoadSuccess={(pdf) => {
@@ -35,7 +34,7 @@ export const PdfViewer: React.FC<{ scale: number; src: string }> = ({
           options={{ workerSrc: 'pdf.worker.js' }}
         >
           {range(1, pageNumber + 1).map((p) => {
-            return <Page className='page' scale={scale}  pageNumber={p} />
+            return <Page className="page" scale={scale} pageNumber={p} />
           })}
         </Document>
       ) : (

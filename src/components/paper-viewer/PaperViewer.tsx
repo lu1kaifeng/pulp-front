@@ -1,7 +1,14 @@
 import React, { useState } from 'react'
-import { Button, ButtonGroup, Container, makeStyles } from '@material-ui/core'
+import {
+  Button,
+  ButtonGroup,
+  Container,
+  makeStyles,
+  TextField,
+} from '@material-ui/core'
 import { ZoomIn, ZoomOut } from '@material-ui/icons'
 import { PdfViewer } from './pdf-viewer/PdfViewer'
+import { QAClient } from '../../client/QAClient'
 
 export const PaperViewer: React.FC<{ src: string; id: string }> = ({
   // eslint-disable-next-line react/prop-types
@@ -20,7 +27,16 @@ export const PaperViewer: React.FC<{ src: string; id: string }> = ({
 
   const classes = useStyles()
   return (
-    <Container fixed>
+    <Container>
+      <TextField
+        error
+        id="filled-error"
+        defaultValue=""
+        variant="filled"
+        onChange={async (event) => {
+          console.log(await QAClient.postQuestion(id, event.target.value))
+        }}
+      />
       <PdfViewer src={src} scale={scale} />
       <ButtonGroup
         className={classes.fab}
@@ -38,4 +54,9 @@ export const PaperViewer: React.FC<{ src: string; id: string }> = ({
       </ButtonGroup>
     </Container>
   )
+}
+
+PaperViewer.defaultProps = {
+  id: '1702.00045',
+  src: 'https://arxiv.org/pdf/1702.00045.pdf',
 }
