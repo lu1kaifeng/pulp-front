@@ -1,5 +1,5 @@
 .react-pdf__Page__textContent span {
-  opacity: 0.1;
+  opacity: 0.5;
 }
 
 .react-pdf__Page__textContent span::selection {
@@ -10,5 +10,5 @@
   line-height: initial;
 }
 .page{
-  display: flex; justify-content: center;top: 0;
+  display: flex; justify-content: center;
 }
