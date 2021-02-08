@@ -9,6 +9,7 @@ import {
 import { ZoomIn, ZoomOut } from '@material-ui/icons'
 import { PdfViewer } from './pdf-viewer/PdfViewer'
 import { QAClient } from '../../client/QAClient'
+import { QAAnswer } from '../../model/QAAnswer'
 
 export const PaperViewer: React.FC<{ src: string; id: string }> = ({
   // eslint-disable-next-line react/prop-types
@@ -17,6 +18,7 @@ export const PaperViewer: React.FC<{ src: string; id: string }> = ({
   id,
 }) => {
   const [scale, SetScale] = useState(1)
+  const [answer, SetAnswer] = useState<QAAnswer|null>(null)
   const useStyles = makeStyles((theme) => ({
     fab: {
       position: 'fixed',
@@ -34,10 +36,10 @@ export const PaperViewer: React.FC<{ src: string; id: string }> = ({
         defaultValue=""
         variant="filled"
         onChange={async (event) => {
-          console.log(await QAClient.postQuestion(id, event.target.value))
+          SetAnswer(await QAClient.postQuestion(id, event.target.value))
         }}
       />
-      <PdfViewer src={src} scale={scale} />
+      <PdfViewer answer={answer} src={src} scale={scale} />
       <ButtonGroup
         className={classes.fab}
         orientation="vertical"

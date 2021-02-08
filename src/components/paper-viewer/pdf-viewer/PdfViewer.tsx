@@ -4,13 +4,16 @@ import { Container } from '@material-ui/core'
 import { range } from 'lodash'
 import './PaperViewer.scss'
 import ReactDOM from 'react-dom'
+import { QAAnswer } from '../../../model/QAAnswer'
 
 // eslint-disable-next-line react/prop-types
-export const PdfViewer: React.FC<{ scale: number; src: string }> = ({
+export const PdfViewer: React.FC<{ scale: number; src: string;answer: QAAnswer|null }> = ({
   // eslint-disable-next-line react/prop-types
   scale,
   // eslint-disable-next-line react/prop-types
   src,
+                                                                                            // eslint-disable-next-line react/prop-types
+  answer
 }) => {
   const [pageNumber, setPageNumber] = useState(0)
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -26,6 +29,16 @@ export const PdfViewer: React.FC<{ scale: number; src: string }> = ({
     }
     fetchData()
   }, [src])
+
+  function removeTextLayerOffset() {
+    const textLayers = document.querySelectorAll(".react-pdf__Page__textContent");
+    textLayers.forEach(layer => {
+      // @ts-ignore
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { style } = layer;
+      style.left="49.5%"
+    });
+  }
 
   return (
     <Container className="react-pdf">
@@ -47,6 +60,7 @@ export const PdfViewer: React.FC<{ scale: number; src: string }> = ({
                     pageRefs[p] = ref
                   }}
                   scale={scale}
+                  onLoadSuccess={removeTextLayerOffset}
                   onRenderSuccess={() => {
                     // eslint-disable-next-line @typescript-eslint/naming-convention
                     function find_csa(arr: string | any[], subarr: string | any[], from_index: number) {
@@ -86,7 +100,7 @@ export const PdfViewer: React.FC<{ scale: number; src: string }> = ({
                         // eslint-disable-next-line no-restricted-syntax,guard-for-in
                         for (let i = 0; i < pp.span.length; i += 1) {
                           const preLen = text.length
-                          text.push(...pp.span[i].innerText.split(/\s+/)) // second console output
+                          text.push(...pp.span[i].innerText.replace(/\W/g, ' ').split(/\s+/)) // second console output
                           pos.push({
                             start: preLen,
                             end: text.length,
@@ -94,26 +108,32 @@ export const PdfViewer: React.FC<{ scale: number; src: string }> = ({
                           })
                         }
                       }
-                      // eslint-disable-next-line @typescript-eslint/naming-convention
-                      const to_search = 'Aggregation of Holistically-Nested Convolutional Neural Networks for Automated Pancreas Localization and'.split(
-                        /\s+/
-                      )
-                      const from = find_csa(text,to_search,0)
-                      const to = from + to_search.length
                       const toHightlight = []
+                      // eslint-disable-next-line react/prop-types
+                      const searches = answer!==null?answer.answers.map((m)=>{
+                        return m.context !== null ? m.context.replace(/\W/g, ' ').split(/\s+/) : []
+                      }) :[]
+                      console.log(searches)
                       // eslint-disable-next-line no-restricted-syntax
-                      for(const ss of pos){
-                          if(ss.start > from && ss.end < to){
-                            toHightlight.push(ss.span)
+                      for(const toSearch of searches) {
+                        const from = find_csa(text,toSearch, 0)
+                        if(from !== -1) {
+                          const to = from + toSearch.length
+
+                          // eslint-disable-next-line no-restricted-syntax
+                          for (const ss of pos) {
+                            if (ss.start > from && ss.end < to) {
+                              toHightlight.push(ss.span)
+                            }
+                            if (ss.start < from && ss.end > from) {
+                              toHightlight.push(ss.span)
+                            }
+                            if (ss.start < to && ss.end > to) {
+                              toHightlight.push(ss.span)
+                            }
                           }
-                        if(ss.start < from && ss.end > from){
-                          toHightlight.push(ss.span)
-                        }
-                        if(ss.start < to && ss.end > to){
-                          toHightlight.push(ss.span)
                         }
                       }
-
                       // eslint-disable-next-line no-restricted-syntax
                       for(const spa of toHightlight){
                         spa.innerHTML = `<mark>${spa.innerHTML}</mark>`
