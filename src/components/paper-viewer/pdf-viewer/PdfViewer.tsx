@@ -49,7 +49,7 @@ export const PdfViewer: React.FC<{ scale: number; src: string;answer: QAAnswer|n
           onLoadSuccess={(pdf) => {
             setPageNumber(pdf.numPages)
           }}
-          options={{ workerSrc: 'pdf.worker.js' }}
+          options={{ workerSrc: '/pdf.worker.js' }}
         >
           {pageNumber !== 0 ? (
             range(1, pageNumber + 1).map((p) => {
@@ -156,6 +156,5 @@ export const PdfViewer: React.FC<{ scale: number; src: string;answer: QAAnswer|n
 }
 
 PdfViewer.defaultProps = {
-  scale: 1.0,
-  src: 'https://arxiv.org/pdf/1701.00145.pdf',
+  scale: 1.0
 }

@@ -58,7 +58,3 @@ export const PaperViewer: React.FC<{ src: string; id: string }> = ({
   )
 }
 
-PaperViewer.defaultProps = {
-  id: '1702.00045',
-  src: 'https://arxiv.org/pdf/1702.00045.pdf',
-}
