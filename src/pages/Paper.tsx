@@ -8,8 +8,9 @@ export const Paper: React.FC = () => {
   console.log(paperId)
   return (
     <Fragment>
-      <PaperNavbar />
-      <PaperViewer id={paperId} src={`https://arxiv.org/pdf/${paperId}.pdf`} />
+      <PaperNavbar >
+        <PaperViewer id={paperId} src={`https://arxiv.org/pdf/${paperId}.pdf`} />
+      </PaperNavbar>
     </Fragment>
   )
 }

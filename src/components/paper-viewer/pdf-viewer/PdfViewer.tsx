@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { Document, Page } from 'react-pdf'
-import { Container } from '@material-ui/core'
+import { Document, Page,pdfjs } from 'react-pdf'
+import { Box, Container, Paper } from '@material-ui/core'
 import { range } from 'lodash'
 import './PaperViewer.scss'
 import ReactDOM from 'react-dom'
 import { QAAnswer } from '../../../model/QAAnswer'
 
+pdfjs.GlobalWorkerOptions.workerSrc =require('../../../../node_modules/pdfjs-dist/build/pdf.worker.js').default
 // eslint-disable-next-line react/prop-types
 export const PdfViewer: React.FC<{ scale: number; src: string;answer: QAAnswer|null }> = ({
   // eslint-disable-next-line react/prop-types
@@ -36,11 +37,12 @@ export const PdfViewer: React.FC<{ scale: number; src: string;answer: QAAnswer|n
       // @ts-ignore
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { style } = layer;
-      style.left="49.5%"
+      style.left="50%"
     });
   }
 
   return (
+    <Box display="flex" justifyContent="center">
     <Container className="react-pdf">
       {pdfFile !== null ? (
         <Document
@@ -49,12 +51,13 @@ export const PdfViewer: React.FC<{ scale: number; src: string;answer: QAAnswer|n
           onLoadSuccess={(pdf) => {
             setPageNumber(pdf.numPages)
           }}
-          options={{ workerSrc: '/pdf.worker.js' }}
         >
           {pageNumber !== 0 ? (
             range(1, pageNumber + 1).map((p) => {
               return (
+                <Paper>
                 <Page
+                  renderAnnotationLayer={false}
                   className="page"
                   ref={(ref) => {
                     pageRefs[p] = ref
@@ -142,6 +145,7 @@ export const PdfViewer: React.FC<{ scale: number; src: string;answer: QAAnswer|n
                   }}
                   pageNumber={p}
                 />
+                </Paper>
               )
             })
           ) : (
@@ -152,6 +156,7 @@ export const PdfViewer: React.FC<{ scale: number; src: string;answer: QAAnswer|n
         <div />
       )}
     </Container>
+    </Box>
   )
 }
 
