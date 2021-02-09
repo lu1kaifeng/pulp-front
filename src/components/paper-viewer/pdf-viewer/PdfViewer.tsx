@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Document, Page,pdfjs } from 'react-pdf'
-import { Box, Container, Paper } from '@material-ui/core'
+import { Box, Container} from '@material-ui/core'
 import { range } from 'lodash'
 import './PaperViewer.scss'
 import ReactDOM from 'react-dom'
@@ -55,7 +55,6 @@ export const PdfViewer: React.FC<{ scale: number; src: string;answer: QAAnswer|n
           {pageNumber !== 0 ? (
             range(1, pageNumber + 1).map((p) => {
               return (
-                <Paper>
                 <Page
                   renderAnnotationLayer={false}
                   className="page"
@@ -145,7 +144,6 @@ export const PdfViewer: React.FC<{ scale: number; src: string;answer: QAAnswer|n
                   }}
                   pageNumber={p}
                 />
-                </Paper>
               )
             })
           ) : (
