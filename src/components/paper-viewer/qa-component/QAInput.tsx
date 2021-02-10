@@ -1,4 +1,4 @@
-import React, { PropsWithChildren } from 'react'
+import React, { PropsWithChildren, useState } from 'react'
 import { makeStyles, Theme, createStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import InputBase from '@material-ui/core/InputBase';
@@ -18,9 +18,6 @@ const useStyles = makeStyles((theme: Theme) =>
       marginLeft: theme.spacing(1),
       flex: 1,
     },
-    iconButton: {
-      padding: 10,
-    },
     divider: {
       height: 28,
       margin: 4,
@@ -29,23 +26,25 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 
-export const QAInput: React.FC<PropsWithChildren<{ onClose: () => void }>> = ({
+export const QAInput: React.FC<PropsWithChildren<{ onClose: () => void,onSearch:(q:string)=>void }>> = ({
                                                                                 // eslint-disable-next-line react/prop-types
-  onClose,
+  onClose,onSearch
 }) => {
   const classes = useStyles();
-
+  const [question,setQuestion] = useState<string | null>(null)
   return (
-    <Paper elevation={0} square component="form" className={classes.root}>
-  <IconButton className={classes.iconButton} aria-label="menu" onClick={onClose}>
+    <Paper elevation={0} square component="div" className={classes.root}>
+  <IconButton aria-label="menu" onClick={onClose}>
     <ChevronRightIcon />
     </IconButton>
     <InputBase
   className={classes.input}
+  value={question}
   placeholder="Ask A Question"
   inputProps={{ 'aria-label': 'Ask A Question' }}
+  onChange={(e)=>{setQuestion(e.target.value)}}
   />
-  <IconButton type="submit" className={classes.iconButton} aria-label="search">
+  <IconButton disabled={question===null || question.trim().length === 0} onClick={()=>onSearch(question!!)} aria-label="search">
     <SearchIcon />
     </IconButton>
     </Paper>

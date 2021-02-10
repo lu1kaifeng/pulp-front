@@ -4,11 +4,9 @@ import {
   ButtonGroup,
   Container,
   makeStyles,
-  TextField,
 } from '@material-ui/core'
 import { ZoomIn, ZoomOut } from '@material-ui/icons'
 import { PdfViewer } from './pdf-viewer/PdfViewer'
-import { QAClient } from '../../client/QAClient'
 import { QAAnswer } from '../../model/QAAnswer'
 
 export const PaperViewer: React.FC<{ src: string; id: string }> = ({
@@ -18,7 +16,7 @@ export const PaperViewer: React.FC<{ src: string; id: string }> = ({
   id,
 }) => {
   const [scale, SetScale] = useState(1)
-  const [answer, SetAnswer] = useState<QAAnswer|null>(null)
+  const [answer] = useState<QAAnswer|null>(null)
   const useStyles = makeStyles((theme) => ({
     fab: {
       position: 'fixed',
@@ -30,15 +28,6 @@ export const PaperViewer: React.FC<{ src: string; id: string }> = ({
   const classes = useStyles()
   return (
     <Container>
-      <TextField
-        error
-        id="filled-error"
-        defaultValue=""
-        variant="filled"
-        onChange={async (event) => {
-          SetAnswer(await QAClient.postQuestion(id, event.target.value))
-        }}
-      />
       <PdfViewer answer={answer} src={src} scale={scale} />
       <ButtonGroup
         className={classes.fab}

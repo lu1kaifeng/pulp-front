@@ -15,7 +15,7 @@ export const Paper: React.FC = () => {
   }, [paperId])
   return (
     <Fragment>
-      <PaperNavbar meta={paperMeta} >
+      <PaperNavbar id={paperId} meta={paperMeta} >
         <PaperViewer id={paperId} src={`https://arxiv.org/pdf/${paperId}.pdf`} />
       </PaperNavbar>
     </Fragment>

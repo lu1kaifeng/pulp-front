@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import clsx from 'clsx'
 import {
   makeStyles,
@@ -18,14 +18,11 @@ import MenuIcon from '@material-ui/icons/Menu'
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
 import ChevronRightIcon from '@material-ui/icons/ChevronRight'
 import ListItem from '@material-ui/core/ListItem'
-import ListItemIcon from '@material-ui/core/ListItemIcon'
-import ListItemText from '@material-ui/core/ListItemText'
-import InboxIcon from '@material-ui/icons/MoveToInbox'
-import MailIcon from '@material-ui/icons/Mail'
 import SearchIcon from '@material-ui/icons/Search'
 import { Skeleton } from '@material-ui/lab'
 import { PaperMeta } from '../../model/PaperMeta'
-import { QAInput } from './qa-input/QAInput'
+import { QAInput } from './qa-component/QAInput'
+import { QAAnswerView } from './qa-component/QAAnswerView'
 
 const drawerWidthLeft = 240
 const drawerWidthRight = 300
@@ -124,10 +121,12 @@ const useStyles = makeStyles((theme: Theme) =>
 export function PaperNavbar({
   children,
   meta,
-}: React.PropsWithChildren<{ meta: PaperMeta | null }>) {
+  id
+}: React.PropsWithChildren<{ meta: PaperMeta | null ,id: string}>) {
   const classes = useStyles()
   const theme = useTheme()
   const [openLeft, setOpenLeft] = React.useState(false)
+  const [question,setQuestion] = useState<string | null>(null)
   const [openRight, setOpenRight] = React.useState(false)
 
   const handleDrawerOpenLeft = () => {
@@ -226,31 +225,11 @@ export function PaperNavbar({
         }}
       >
         <div className={classes.drawerHeader}>
-          <QAInput onClose={handleDrawerCloseRight}/>
+          <QAInput onClose={handleDrawerCloseRight} onSearch={(q)=>setQuestion(q)} />
         </div>
 
         <Divider />
-        <List>
-          {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-            <ListItem button key={text}>
-              <ListItemIcon>
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-              </ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItem>
-          ))}
-        </List>
-        <Divider />
-        <List>
-          {['All mail', 'Trash', 'Spam'].map((text, index) => (
-            <ListItem button key={text}>
-              <ListItemIcon>
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-              </ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItem>
-          ))}
-        </List>
+          <QAAnswerView id={id} question={question}/>
       </Drawer>
     </div>
   )
