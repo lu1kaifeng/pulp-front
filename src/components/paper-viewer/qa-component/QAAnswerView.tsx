@@ -4,6 +4,8 @@ import MuiAccordion from '@material-ui/core/Accordion'
 import MuiAccordionSummary from '@material-ui/core/AccordionSummary'
 import MuiAccordionDetails from '@material-ui/core/AccordionDetails'
 import Typography from '@material-ui/core/Typography'
+import { range } from 'lodash'
+import Skeleton from '@material-ui/lab/Skeleton'
 import { Answer, QAAnswer } from '../../../model/QAAnswer'
 import { QAClient } from '../../../client/QAClient'
 
@@ -76,33 +78,48 @@ export const QAAnswerView: React.FC<{
 
   return !loading ? (
     <div>
-      {answer !== null ? (
-        answer.answers.map((m: Answer, index: number) => {
-          return (
-            <Accordion
-              square
-              expanded={expanded === `panel${index}`}
-              onChange={handleChange(`panel${index}`)}
-            >
-              <AccordionSummary
-                aria-controls="panel1d-content"
-                id="panel1d-header"
+      {answer !== null
+        ? answer.answers.map((m: Answer, index: number) => {
+            return (
+              <Accordion
+                square
+                expanded={expanded === `panel${index}`}
+                onChange={handleChange(`panel${index}`)}
               >
-                <Typography>
-                  {m.answer !== null ? m.answer : 'No Answer'}
-                </Typography>
-              </AccordionSummary>
-              <AccordionDetails>
-                <Typography>{m.context}</Typography>
-              </AccordionDetails>
-            </Accordion>
-          )
-        })
-      ) : (
-        <div />
-      )}
+                <AccordionSummary
+                  aria-controls="panel1d-content"
+                  id="panel1d-header"
+                >
+                  <Typography>
+                    {m.answer !== null ? m.answer : 'No Answer'}
+                  </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <Typography>{m.context}</Typography>
+                </AccordionDetails>
+              </Accordion>
+            )
+          })
+        : (<div/>)
+          }
     </div>
   ) : (
-    <div />
+    <React.Fragment>
+      {range(0, 5).map((i) => {
+      return (
+        <Skeleton  key={i}>
+        <Accordion
+          square>
+          <AccordionSummary
+            aria-controls="panel1d-content"
+            id="panel1d-header"
+          >
+            <Typography>sSpatial Aggregation of Holistically-Nested Convolutional Neural Networks</Typography>
+          </AccordionSummary>
+
+        </Accordion>
+        </Skeleton>
+      )})}
+    </React.Fragment>
   )
 }
