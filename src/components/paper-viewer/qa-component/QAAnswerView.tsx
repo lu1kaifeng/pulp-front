@@ -53,8 +53,9 @@ const AccordionDetails = withStyles((theme) => ({
 export const QAAnswerView: React.FC<{
   id: string
   question: string | null
+  onHightLight: (a: Answer)=>void
   // eslint-disable-next-line react/prop-types
-}> = ({ id, question }) => {
+}> = ({ id, question ,onHightLight}) => {
   const [expanded, setExpanded] = React.useState<string | false>('panel1')
   const [answer, setAnswer] = useState<QAAnswer | null>(null)
   const [loading, setLoading] = useState(false)
@@ -89,6 +90,7 @@ export const QAAnswerView: React.FC<{
                 <AccordionSummary
                   aria-controls="panel1d-content"
                   id="panel1d-header"
+                  onClick={()=>onHightLight(m)}
                 >
                   <Typography>
                     {m.answer !== null ? m.answer : 'No Answer'}

@@ -4,11 +4,12 @@ import { Box, Container} from '@material-ui/core'
 import { range } from 'lodash'
 import './PaperViewer.scss'
 import ReactDOM from 'react-dom'
-import { QAAnswer } from '../../../model/QAAnswer'
+import { Answer} from '../../../model/QAAnswer'
+import { SearchClient } from '../../../client/SearchClient'
 
 pdfjs.GlobalWorkerOptions.workerSrc =require('pdfjs-dist/build/pdf.worker.min.js').default
 // eslint-disable-next-line react/prop-types
-export const PdfViewer: React.FC<{ scale: number; src: string;answer: QAAnswer|null }> = ({
+export const PdfViewer: React.FC<{ scale: number; src: string;answer: Answer|null }> = ({
   // eslint-disable-next-line react/prop-types
   scale,
   // eslint-disable-next-line react/prop-types
@@ -65,23 +66,7 @@ export const PdfViewer: React.FC<{ scale: number; src: string;answer: QAAnswer|n
                   onLoadSuccess={removeTextLayerOffset}
                   onRenderSuccess={() => {
                     // eslint-disable-next-line @typescript-eslint/naming-convention
-                    function find_csa(arr: string | any[], subarr: string | any[], from_index: number) {
-                      // eslint-disable-next-line no-bitwise
-                      let i = from_index >>> 0
-                      const sl = subarr.length
-                      const l = arr.length + 1 - sl
 
-                      // eslint-disable-next-line no-labels,no-restricted-syntax,no-plusplus
-                      loop: for (; i < l; i++) {
-                        // eslint-disable-next-line no-plusplus
-                        for (let j = 0; j < sl; j++)
-                          if (arr[i + j] !== subarr[j])
-                            // eslint-disable-next-line no-continue,no-labels
-                            continue loop
-                        return i
-                      }
-                      return -1
-                    }
                     // @ts-ignore
                     // eslint-disable-next-line react/no-find-dom-node
                     const textSpan = ReactDOM.findDOMNode(
@@ -94,15 +79,15 @@ export const PdfViewer: React.FC<{ scale: number; src: string;answer: QAAnswer|n
                     loadedPage += 1
                     if (pageNumber !== 0 && loadedPage === pageNumber) {
                       console.log(textSpans)
-                      const text = []
+                      let text = ''
+                      // @ts-ignore
                       const pos = []
                       // eslint-disable-next-line no-restricted-syntax
                       for (const pp of textSpans) {
-                        console.log(pp)
                         // eslint-disable-next-line no-restricted-syntax,guard-for-in
                         for (let i = 0; i < pp.span.length; i += 1) {
                           const preLen = text.length
-                          text.push(...pp.span[i].innerText.replace(/\W/g, ' ').split(/\s+/)) // second console output
+                          text+=pp.span[i].innerText.replace(/\W/g, ' ') // second console output
                           pos.push({
                             start: preLen,
                             end: text.length,
@@ -110,36 +95,45 @@ export const PdfViewer: React.FC<{ scale: number; src: string;answer: QAAnswer|n
                           })
                         }
                       }
-                      const toHightlight = []
+
+
                       // eslint-disable-next-line react/prop-types
-                      const searches = answer!==null?answer.answers.map((m)=>{
-                        return m.context !== null ? m.context.replace(/\W/g, ' ').split(/\s+/) : []
+                      const searches = answer!==null?[answer].map((m)=>{
+                        return m.context !== null ? m.context.replace(/\W/g, ' ') : ''
                       }) :[]
                       console.log(searches)
                       // eslint-disable-next-line no-restricted-syntax
                       for(const toSearch of searches) {
-                        const from = find_csa(text,toSearch, 0)
-                        if(from !== -1) {
-                          const to = from + toSearch.length
+                        SearchClient.postSearch({ max_l_dist: 32, query: [toSearch], text }).then((response)=>{
+                          const from = response[0].start
+                          const to = response[0].end
+                          const toHightlight = []
+                          if(from !== -1) {
 
-                          // eslint-disable-next-line no-restricted-syntax
-                          for (const ss of pos) {
-                            if (ss.start > from && ss.end < to) {
-                              toHightlight.push(ss.span)
-                            }
-                            if (ss.start < from && ss.end > from) {
-                              toHightlight.push(ss.span)
-                            }
-                            if (ss.start < to && ss.end > to) {
-                              toHightlight.push(ss.span)
+
+                            // @ts-ignore
+                            // eslint-disable-next-line no-restricted-syntax
+                            for (const ss of pos) {
+                              if (ss.start > from && ss.end < to) {
+                                toHightlight.push(ss.span)
+                              }
+                              if (ss.start < from && ss.end > from) {
+                                toHightlight.push(ss.span)
+                              }
+                              if (ss.start < to && ss.end > to) {
+                                toHightlight.push(ss.span)
+                              }
                             }
                           }
-                        }
+                          // eslint-disable-next-line no-restricted-syntax
+                          for(const spa of toHightlight){
+                            spa.innerHTML = `<mark>${spa.innerHTML}</mark>`
+                          }
+                        })
+
+
                       }
-                      // eslint-disable-next-line no-restricted-syntax
-                      for(const spa of toHightlight){
-                        spa.innerHTML = `<mark>${spa.innerHTML}</mark>`
-                      }
+
                     }
                   }}
                   pageNumber={p}

@@ -23,6 +23,7 @@ import { Skeleton } from '@material-ui/lab'
 import { PaperMeta } from '../../model/PaperMeta'
 import { QAInput } from './qa-component/QAInput'
 import { QAAnswerView } from './qa-component/QAAnswerView'
+import { Answer } from '../../model/QAAnswer'
 
 const drawerWidthLeft = 240
 const drawerWidthRight = 300
@@ -121,8 +122,9 @@ const useStyles = makeStyles((theme: Theme) =>
 export function PaperNavbar({
   children,
   meta,
-  id
-}: React.PropsWithChildren<{ meta: PaperMeta | null ,id: string}>) {
+  id,
+  onHighLight
+}: React.PropsWithChildren<{ meta: PaperMeta | null ,id: string,onHighLight:(a: Answer)=>void}>) {
   const classes = useStyles()
   const theme = useTheme()
   const [openLeft, setOpenLeft] = React.useState(false)
@@ -229,7 +231,7 @@ export function PaperNavbar({
         </div>
 
         <Divider />
-          <QAAnswerView id={id} question={question}/>
+          <QAAnswerView onHightLight={onHighLight} id={id} question={question}/>
       </Drawer>
     </div>
   )

@@ -7,16 +7,18 @@ import {
 } from '@material-ui/core'
 import { ZoomIn, ZoomOut } from '@material-ui/icons'
 import { PdfViewer } from './pdf-viewer/PdfViewer'
-import { QAAnswer } from '../../model/QAAnswer'
+import { Answer} from '../../model/QAAnswer'
 
-export const PaperViewer: React.FC<{ src: string; id: string }> = ({
+export const PaperViewer: React.FC<{ src: string; id: string;answer:Answer|null }> = ({
   // eslint-disable-next-line react/prop-types
   src,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars,react/prop-types
   id,
+                                                                                        // eslint-disable-next-line react/prop-types
+  answer
 }) => {
   const [scale, SetScale] = useState(1)
-  const [answer] = useState<QAAnswer|null>(null)
+
   const useStyles = makeStyles((theme) => ({
     fab: {
       position: 'fixed',
