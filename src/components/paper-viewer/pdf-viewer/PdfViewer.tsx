@@ -6,7 +6,7 @@ import './PaperViewer.scss'
 import ReactDOM from 'react-dom'
 import { QAAnswer } from '../../../model/QAAnswer'
 
-pdfjs.GlobalWorkerOptions.workerSrc =require('../../../../node_modules/pdfjs-dist/build/pdf.worker.js').default
+pdfjs.GlobalWorkerOptions.workerSrc =require('pdfjs-dist/build/pdf.worker.min.js').default
 // eslint-disable-next-line react/prop-types
 export const PdfViewer: React.FC<{ scale: number; src: string;answer: QAAnswer|null }> = ({
   // eslint-disable-next-line react/prop-types

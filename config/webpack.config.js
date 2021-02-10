@@ -361,7 +361,7 @@ module.exports = function (webpackEnv) {
       strictExportPresence: true,
       rules: [
         {
-          test: /\.worker\.js$/,
+          test: [/\.worker\.js$/,/\.worker\.min\.js$/],
           use: { loader: "file-loader" },
         },
         // Disable require.ensure as it's not a standard language feature.

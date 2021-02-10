@@ -1,24 +1,34 @@
-import React from 'react';
-import clsx from 'clsx';
-import { makeStyles, useTheme, Theme, createStyles } from '@material-ui/core/styles';
-import Drawer from '@material-ui/core/Drawer';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import List from '@material-ui/core/List';
-import Typography from '@material-ui/core/Typography';
-import Divider from '@material-ui/core/Divider';
-import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
-import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import InboxIcon from '@material-ui/icons/MoveToInbox';
-import MailIcon from '@material-ui/icons/Mail';
+import React from 'react'
+import clsx from 'clsx'
+import {
+  makeStyles,
+  useTheme,
+  Theme,
+  createStyles,
+} from '@material-ui/core/styles'
+import Drawer from '@material-ui/core/Drawer'
+import CssBaseline from '@material-ui/core/CssBaseline'
+import AppBar from '@material-ui/core/AppBar'
+import Toolbar from '@material-ui/core/Toolbar'
+import List from '@material-ui/core/List'
+import Typography from '@material-ui/core/Typography'
+import Divider from '@material-ui/core/Divider'
+import IconButton from '@material-ui/core/IconButton'
+import MenuIcon from '@material-ui/icons/Menu'
+import ChevronLeftIcon from '@material-ui/icons/ChevronLeft'
+import ChevronRightIcon from '@material-ui/icons/ChevronRight'
+import ListItem from '@material-ui/core/ListItem'
+import ListItemIcon from '@material-ui/core/ListItemIcon'
+import ListItemText from '@material-ui/core/ListItemText'
+import InboxIcon from '@material-ui/icons/MoveToInbox'
+import MailIcon from '@material-ui/icons/Mail'
+import SearchIcon from '@material-ui/icons/Search'
+import { Skeleton } from '@material-ui/lab'
+import { PaperMeta } from '../../model/PaperMeta'
+import { QAInput } from './qa-input/QAInput'
 
-const drawerWidth = 240;
+const drawerWidthLeft = 240
+const drawerWidthRight = 300
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -31,12 +41,20 @@ const useStyles = makeStyles((theme: Theme) =>
         duration: theme.transitions.duration.leavingScreen,
       }),
     },
-    title:{
-     flexGrow:1
+    title: {
+      flexGrow: 1,
     },
-    appBarShift: {
-      width: `calc(100% - ${drawerWidth}px)`,
-      marginLeft: drawerWidth,
+    appBarShiftLeft: {
+      width: `calc(100% - ${drawerWidthLeft}px)`,
+      marginLeft: drawerWidthLeft,
+      transition: theme.transitions.create(['margin', 'width'], {
+        easing: theme.transitions.easing.easeOut,
+        duration: theme.transitions.duration.enteringScreen,
+      }),
+    },
+    appBarShiftRight: {
+      width: `calc(100% - ${drawerWidthRight}px)`,
+      marginRight: drawerWidthRight,
       transition: theme.transitions.create(['margin', 'width'], {
         easing: theme.transitions.easing.easeOut,
         duration: theme.transitions.duration.enteringScreen,
@@ -45,26 +63,33 @@ const useStyles = makeStyles((theme: Theme) =>
     menuButton: {
       marginRight: theme.spacing(2),
     },
-    rightMenuButton:{
-      float:'right'
+    rightMenuButton: {
+      float: 'right',
     },
-    toolBar:{
-      width:'100%'
+    toolBar: {
+      width: '100%',
     },
     hide: {
       display: 'none',
     },
-    drawer: {
-      width: drawerWidth,
+    drawerLeft: {
+      width: drawerWidthLeft,
       flexShrink: 0,
     },
-    drawerPaper: {
-      width: drawerWidth,
+    drawerPaperLeft: {
+      width: drawerWidthLeft,
+    },
+    drawerRight: {
+      width: drawerWidthRight,
+      flexShrink: 0,
+    },
+    drawerPaperRight: {
+      width: drawerWidthRight,
     },
     drawerHeader: {
       display: 'flex',
       alignItems: 'center',
-      padding: theme.spacing(0, 1),
+      padding: theme.spacing(0, 0),
       // necessary for content to be below app bar
       ...theme.mixins.toolbar,
       justifyContent: 'flex-end',
@@ -76,8 +101,8 @@ const useStyles = makeStyles((theme: Theme) =>
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.leavingScreen,
       }),
-      marginRight: -drawerWidth,
-      marginLeft: -drawerWidth,
+      marginRight: -drawerWidthRight,
+      marginLeft: -drawerWidthLeft,
     },
     contentShiftLeft: {
       transition: theme.transitions.create('margin', {
@@ -93,36 +118,41 @@ const useStyles = makeStyles((theme: Theme) =>
       }),
       marginRight: 0,
     },
-  }),
-);
+  })
+)
 
-export  function PaperNavbar({ children }:React.PropsWithChildren<{ }>) {
-  const classes = useStyles();
-  const theme = useTheme();
-  const [openLeft, setOpenLeft] = React.useState(false);
-  const [openRight, setOpenRight] = React.useState(false);
+export function PaperNavbar({
+  children,
+  meta,
+}: React.PropsWithChildren<{ meta: PaperMeta | null }>) {
+  const classes = useStyles()
+  const theme = useTheme()
+  const [openLeft, setOpenLeft] = React.useState(false)
+  const [openRight, setOpenRight] = React.useState(false)
 
   const handleDrawerOpenLeft = () => {
-    setOpenLeft(true);
-  };
+    setOpenLeft(true)
+  }
 
   const handleDrawerCloseLeft = () => {
-    setOpenLeft(false);
-  };
+    setOpenLeft(false)
+  }
   const handleDrawerOpenRight = () => {
-    setOpenRight(true);
-  };
+    setOpenRight(true)
+  }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleDrawerCloseRight = () => {
-    setOpenRight(false);
-  };
+    setOpenRight(false)
+  }
   return (
     <div className={classes.root}>
       <CssBaseline />
       <AppBar
         position="fixed"
         className={clsx(classes.appBar, {
-          [classes.appBarShift]: openLeft,
+          [classes.appBarShiftLeft]: openLeft,
+          [classes.appBarShiftRight]: openRight,
         })}
       >
         <Toolbar className={classes.toolBar}>
@@ -136,51 +166,45 @@ export  function PaperNavbar({ children }:React.PropsWithChildren<{ }>) {
             <MenuIcon />
           </IconButton>
           <Typography className={classes.title} variant="h6" noWrap>
-            Persistent drawer
+            {meta == null ? <Skeleton /> : meta.meta.title}
           </Typography>
           <IconButton
             color="inherit"
             aria-label="open drawer"
             onClick={handleDrawerOpenRight}
             edge="end"
-            className={classes.rightMenuButton}
+            className={clsx(classes.rightMenuButton, openRight && classes.hide)}
           >
-            <MenuIcon />
+            <SearchIcon />
           </IconButton>
         </Toolbar>
-
       </AppBar>
       <Drawer
-        className={classes.drawer}
+        className={classes.drawerLeft}
         variant="persistent"
         anchor="left"
         open={openLeft}
         classes={{
-          paper: classes.drawerPaper,
+          paper: classes.drawerPaperLeft,
         }}
       >
         <div className={classes.drawerHeader}>
           <IconButton onClick={handleDrawerCloseLeft}>
-            {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+            {theme.direction === 'ltr' ? (
+              <ChevronLeftIcon />
+            ) : (
+              <ChevronRightIcon />
+            )}
           </IconButton>
         </div>
         <Divider />
-        <List>
-          {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-            <ListItem button key={text}>
-              <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItem>
-          ))}
-        </List>
         <Divider />
         <List>
-          {['All mail', 'Trash', 'Spam'].map((text, index) => (
-            <ListItem button key={text}>
-              <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItem>
-          ))}
+          <ListItem>
+            <Typography variant="body2" gutterBottom>
+              {meta?.text}
+            </Typography>
+          </ListItem>
         </List>
       </Drawer>
       <main
@@ -193,24 +217,25 @@ export  function PaperNavbar({ children }:React.PropsWithChildren<{ }>) {
         {children}
       </main>
       <Drawer
-        className={classes.drawer}
+        className={classes.drawerRight}
         variant="persistent"
         anchor="right"
         open={openRight}
         classes={{
-          paper: classes.drawerPaper,
+          paper: classes.drawerPaperRight,
         }}
       >
         <div className={classes.drawerHeader}>
-          <IconButton onClick={handleDrawerCloseRight}>
-            {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-          </IconButton>
+          <QAInput onClose={handleDrawerCloseRight}/>
         </div>
+
         <Divider />
         <List>
           {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
             <ListItem button key={text}>
-              <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
+              <ListItemIcon>
+                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+              </ListItemIcon>
               <ListItemText primary={text} />
             </ListItem>
           ))}
@@ -219,12 +244,14 @@ export  function PaperNavbar({ children }:React.PropsWithChildren<{ }>) {
         <List>
           {['All mail', 'Trash', 'Spam'].map((text, index) => (
             <ListItem button key={text}>
-              <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
+              <ListItemIcon>
+                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+              </ListItemIcon>
               <ListItemText primary={text} />
             </ListItem>
           ))}
         </List>
       </Drawer>
     </div>
-  );
+  )
 }
