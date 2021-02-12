@@ -6,7 +6,7 @@ import './PaperViewer.scss'
 import ReactDOM from 'react-dom'
 import { Answer} from '../../../model/QAAnswer'
 import { SearchClient } from '../../../client/SearchClient'
-
+import {minBy} from 'lodash'
 pdfjs.GlobalWorkerOptions.workerSrc =require('pdfjs-dist/build/pdf.worker.min.js').default
 // eslint-disable-next-line react/prop-types
 export const PdfViewer: React.FC<{ scale: number; src: string; onRenderSuccess:(helper: PdfTextHighLightHelper)=>void }> = React.memo(({
@@ -20,7 +20,6 @@ export const PdfViewer: React.FC<{ scale: number; src: string; onRenderSuccess:(
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let loadedPage = 0
   const [pdfFile, setPdfFile] = useState<Uint8Array | null>(null)
-  const [helper, setHelper] = useState<PdfTextHighLightHelper | null>(null)
   const pageRefs: any[] = []
   const textSpans: any[] = []
   // eslint-disable-next-line no-console
@@ -96,7 +95,7 @@ export const PdfViewer: React.FC<{ scale: number; src: string; onRenderSuccess:(
     </Container>
     </Box>
   )
-})
+},(prevProps, nextProps)=>prevProps.src === nextProps.src)
 
 PdfViewer.defaultProps = {
   scale: 1.0
@@ -150,6 +149,12 @@ export class PdfTextHighLightHelper {
         handle.push({ original: spa.innerHTML, span: spa })
         spa.innerHTML = `<mark>${spa.innerHTML}</mark>`
       }
+      // @ts-ignore
+minBy(toHightlight,(m:Element)=>m.getBoundingClientRect().top).scrollIntoView({
+        behavior: 'auto',
+        block: 'center',
+        inline: 'center'
+      })
       return handle
     }
     return []

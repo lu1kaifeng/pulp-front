@@ -8,7 +8,7 @@ import {
 import { ZoomIn, ZoomOut } from '@material-ui/icons'
 import { PdfTextHighLightHelper, PdfViewer } from './pdf-viewer/PdfViewer'
 
-export const PaperViewer: React.FC<{ src: string; id: string; onRenderSuccess:(helper: PdfTextHighLightHelper)=>void }> = React.memo(({
+export const PaperViewer: React.FC<{ src: string; id: string; onRenderSuccess:(helper: PdfTextHighLightHelper)=>void }> = ({
   // eslint-disable-next-line react/prop-types
   src,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars,react/prop-types
@@ -47,5 +47,5 @@ export const PaperViewer: React.FC<{ src: string; id: string; onRenderSuccess:(h
       </ButtonGroup>
     </Container>
   )
-})
+}
 

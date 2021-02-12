@@ -23,7 +23,8 @@ import { Skeleton } from '@material-ui/lab'
 import { PaperMeta } from '../../model/PaperMeta'
 import { QAInput } from './qa-component/QAInput'
 import { QAAnswerView } from './qa-component/QAAnswerView'
-import { Answer } from '../../model/QAAnswer'
+import { HighLightHandle, PdfTextHighLightHelper } from './pdf-viewer/PdfViewer'
+import { PaperViewer } from './PaperViewer'
 
 const drawerWidthLeft = 240
 const drawerWidthRight = 300
@@ -121,16 +122,15 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export function PaperNavbar({
   meta,
-  id,
-  children,
-  onHighLight
-}: React.PropsWithChildren<{ meta: PaperMeta | null ,id: string,onHighLight:(a: Answer)=>void}>) {
+  id
+}: React.PropsWithChildren<{ meta: PaperMeta | null ,id: string}>) {
   const classes = useStyles()
   const theme = useTheme()
   const [openLeft, setOpenLeft] = React.useState(false)
   const [question,setQuestion] = useState<string | null>(null)
-
+  const [highLight,setHighLight] = useState<HighLightHandle | null>(null)
   const [openRight, setOpenRight] = React.useState(false)
+  const [helper, setHelper] = useState<PdfTextHighLightHelper | null>(null)
   const handleDrawerOpenLeft = () => {
     setOpenLeft(true)
   }
@@ -215,7 +215,7 @@ export function PaperNavbar({
         })}
       >
         <div className={classes.drawerHeader} />
-        {children}
+        <PaperViewer id={id} src={`https://arxiv.org/pdf/${id}.pdf`}  onRenderSuccess={(h)=>setHelper(h)}/>
       </main>
       <Drawer
         className={classes.drawerRight}
@@ -232,7 +232,10 @@ export function PaperNavbar({
 
         <Divider />
           <QAAnswerView onHightLight={async (a)=>{
-            onHighLight(a)
+            if(highLight !== null){
+              helper!!.removeHighLight(highLight)
+            }
+            setHighLight(await helper!!.highLight(a))
           }} id={id} question={question}/>
       </Drawer>
     </div>
