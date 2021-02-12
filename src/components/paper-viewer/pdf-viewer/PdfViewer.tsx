@@ -95,7 +95,7 @@ export const PdfViewer: React.FC<{ scale: number; src: string; onRenderSuccess:(
     </Container>
     </Box>
   )
-},(prevProps, nextProps)=>prevProps.src === nextProps.src)
+},(prevProps, nextProps)=>prevProps.src === nextProps.src && prevProps.scale === nextProps.scale)
 
 PdfViewer.defaultProps = {
   scale: 1.0
