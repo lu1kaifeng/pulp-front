@@ -6,7 +6,7 @@ import { QAClient } from '../client/QAClient'
 
 
 
-export const Paper: React.FC = () => {
+export default function Paper() {
   const { paperId } = useParams<{ paperId: string }>()
   const [paperMeta, setPaperMeta] = useState<PaperMeta | null>(null)
   useEffect(() => {

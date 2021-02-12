@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react'
 import Counter from '../components/counter/Counter'
 
-export const Home: React.FC = () => {
+export default function Home(){
   return (
     <Fragment>
       <h1>Redux + TypeScript</h1>

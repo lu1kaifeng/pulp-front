@@ -53,10 +53,10 @@ const AccordionDetails = withStyles((theme) => ({
 export const QAAnswerView: React.FC<{
   id: string
   question: string | null
-  onHightLight: (a: Answer)=>void
+  onHightLight: (a: Answer) => void
   // eslint-disable-next-line react/prop-types
-}> = ({ id, question ,onHightLight}) => {
-  const [expanded, setExpanded] = React.useState<string | false>('panel1')
+}> = ({ id, question, onHightLight }) => {
+  const [expanded, setExpanded] = React.useState<string | false>(false)
   const [answer, setAnswer] = useState<QAAnswer | null>(null)
   const [loading, setLoading] = useState(false)
   useEffect(() => {
@@ -79,49 +79,52 @@ export const QAAnswerView: React.FC<{
 
   return !loading ? (
     <div>
-      {answer !== null
-        ? answer.answers.map((m: Answer, index: number) => {
-            return (
-              <Accordion
-                square
-                expanded={expanded === `panel${index}`}
-                onClick={()=>onHightLight(m)}
-                onChange={handleChange(`panel${index}`)}
+      {answer !== null ? (
+        answer.answers.map((m: Answer, index: number) => {
+          return (
+            <Accordion
+              square
+              expanded={expanded === `panel${index}`}
+              onClick={() => onHightLight(m)}
+              onChange={handleChange(`panel${index}`)}
+            >
+              <AccordionSummary
+                aria-controls="panel1d-content"
+                id="panel1d-header"
               >
-                <AccordionSummary
-                  aria-controls="panel1d-content"
-                  id="panel1d-header"
-                >
-                  <Typography>
-                    {m.answer !== null ? m.answer : 'No Answer'}
-                  </Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <Typography>{m.context}</Typography>
-                </AccordionDetails>
-              </Accordion>
-            )
-          })
-        : (<div/>)
-          }
+                <Typography>
+                  {m.answer !== null ? m.answer : 'No Answer'}
+                </Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <Typography>{m.context}</Typography>
+              </AccordionDetails>
+            </Accordion>
+          )
+        })
+      ) : (
+        <div />
+      )}
     </div>
   ) : (
     <React.Fragment>
       {range(0, 5).map((i) => {
-      return (
-        <Skeleton  key={i}>
-        <Accordion
-          square>
-          <AccordionSummary
-            aria-controls="panel1d-content"
-            id="panel1d-header"
-          >
-            <Typography>sSpatial Aggregation of Holistically-Nested Convolutional Neural Networks</Typography>
-          </AccordionSummary>
-
-        </Accordion>
-        </Skeleton>
-      )})}
+        return (
+          <Skeleton key={i}>
+            <Accordion square>
+              <AccordionSummary
+                aria-controls="panel1d-content"
+                id="panel1d-header"
+              >
+                <Typography>
+                  sSpatial Aggregation of Holistically-Nested Convolutional
+                  Neural Networks
+                </Typography>
+              </AccordionSummary>
+            </Accordion>
+          </Skeleton>
+        )
+      })}
     </React.Fragment>
   )
 }
