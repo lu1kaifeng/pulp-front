@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { RefObject, useEffect, useState } from 'react'
 import { Document, Page,pdfjs } from 'react-pdf'
 import { Box, Container} from '@material-ui/core'
 import { range } from 'lodash'
@@ -9,18 +9,18 @@ import { SearchClient } from '../../../client/SearchClient'
 
 pdfjs.GlobalWorkerOptions.workerSrc =require('pdfjs-dist/build/pdf.worker.min.js').default
 // eslint-disable-next-line react/prop-types
-export const PdfViewer: React.FC<{ scale: number; src: string;answer: Answer|null }> = ({
+export const PdfViewer: React.FC<{ scale: number; src: string; onRenderSuccess:(helper: PdfTextHighLightHelper)=>void }> = React.memo(({
   // eslint-disable-next-line react/prop-types
   scale,
   // eslint-disable-next-line react/prop-types
   src,
-                                                                                            // eslint-disable-next-line react/prop-types
-  answer
+                                                                                                                                                  onRenderSuccess,// eslint-disable-next-line react/prop-types
 }) => {
   const [pageNumber, setPageNumber] = useState(0)
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let loadedPage = 0
   const [pdfFile, setPdfFile] = useState<Uint8Array | null>(null)
+  const [helper, setHelper] = useState<PdfTextHighLightHelper | null>(null)
   const pageRefs: any[] = []
   const textSpans: any[] = []
   // eslint-disable-next-line no-console
@@ -30,7 +30,7 @@ export const PdfViewer: React.FC<{ scale: number; src: string;answer: Answer|nul
       setPdfFile(arrBuf)
     }
     fetchData()
-  }, [src])
+  }, [])
 
   function removeTextLayerOffset() {
     const textLayers = document.querySelectorAll(".react-pdf__Page__textContent");
@@ -75,66 +75,12 @@ export const PdfViewer: React.FC<{ scale: number; src: string;answer: Answer|nul
                     )!!.getElementsByClassName(
                       'react-pdf__Page__textContent'
                     )[0].children
+                    console.log(pageRefs)
                     textSpans.push({ page: p, span: textSpan })
                     loadedPage += 1
                     if (pageNumber !== 0 && loadedPage === pageNumber) {
-                      console.log(textSpans)
-                      let text = ''
-                      // @ts-ignore
-                      const pos = []
-                      // eslint-disable-next-line no-restricted-syntax
-                      for (const pp of textSpans) {
-                        // eslint-disable-next-line no-restricted-syntax,guard-for-in
-                        for (let i = 0; i < pp.span.length; i += 1) {
-                          const preLen = text.length
-                          text+=pp.span[i].innerText.replace(/\W/g, ' ') // second console output
-                          pos.push({
-                            start: preLen,
-                            end: text.length,
-                            span: pp.span[i],
-                          })
-                        }
+                        onRenderSuccess(new PdfTextHighLightHelper(textSpans))
                       }
-
-
-                      // eslint-disable-next-line react/prop-types
-                      const searches = answer!==null?[answer].map((m)=>{
-                        return m.context !== null ? m.context.replace(/\W/g, ' ') : ''
-                      }) :[]
-                      console.log(searches)
-                      // eslint-disable-next-line no-restricted-syntax
-                      for(const toSearch of searches) {
-                        SearchClient.postSearch({ max_l_dist: 32, query: [toSearch], text }).then((response)=>{
-                          const from = response[0].start
-                          const to = response[0].end
-                          const toHightlight = []
-                          if(from !== -1) {
-
-
-                            // @ts-ignore
-                            // eslint-disable-next-line no-restricted-syntax
-                            for (const ss of pos) {
-                              if (ss.start > from && ss.end < to) {
-                                toHightlight.push(ss.span)
-                              }
-                              if (ss.start < from && ss.end > from) {
-                                toHightlight.push(ss.span)
-                              }
-                              if (ss.start < to && ss.end > to) {
-                                toHightlight.push(ss.span)
-                              }
-                            }
-                          }
-                          // eslint-disable-next-line no-restricted-syntax
-                          for(const spa of toHightlight){
-                            spa.innerHTML = `<mark>${spa.innerHTML}</mark>`
-                          }
-                        })
-
-
-                      }
-
-                    }
                   }}
                   pageNumber={p}
                 />
@@ -150,8 +96,67 @@ export const PdfViewer: React.FC<{ scale: number; src: string;answer: Answer|nul
     </Container>
     </Box>
   )
-}
+})
 
 PdfViewer.defaultProps = {
   scale: 1.0
+}
+export type PageSpan = {page:number,span:HTMLCollection}
+export type SubStringPosition = {start:number,end:number,span: Element}
+export type HighLightHandle = {span:Element,original:string}[]
+export class PdfTextHighLightHelper {
+  private pos: SubStringPosition[] = []
+  private readonly text: string = ''
+
+  constructor(pageSpans: PageSpan[]) {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const pp of pageSpans) {
+      // eslint-disable-next-line no-restricted-syntax,guard-for-in
+      for (let i = 0; i < pp.span.length; i += 1) {
+        const preLen = this.text.length
+        this.text += pp.span[i].textContent!!.replace(/\W/g, ' ') // second console output
+        this.pos.push({
+          start: preLen,
+          end: this.text.length,
+          span: pp.span[i],
+        })
+      }
+
+    }
+  }
+
+  public async highLight(answer: Answer):Promise<HighLightHandle> {
+    if(answer !== null && answer.context !== null){
+      const toSearch = answer.context.replace(/\W/g, ' ')
+      const response = await SearchClient.postSearch({ max_l_dist: 32, query: [toSearch], 'text': this.text })
+      const from = response[0].start
+      const to = response[0].end
+      const toHightlight = []
+      if (from !== -1) {
+        for (const ss of this.pos) {
+          if (ss.start > from && ss.end < to) {
+            toHightlight.push(ss.span)
+          }
+          if (ss.start < from && ss.end > from) {
+            toHightlight.push(ss.span)
+          }
+          if (ss.start < to && ss.end > to) {
+            toHightlight.push(ss.span)
+          }
+        }
+      }
+      const handle: HighLightHandle = []
+      for (const spa of toHightlight) {
+        handle.push({ original: spa.innerHTML, span: spa })
+        spa.innerHTML = `<mark>${spa.innerHTML}</mark>`
+      }
+      return handle
+    }
+    return []
+  }
+  public removeHighLight(handle: HighLightHandle){
+    for (const spa of handle) {
+      spa.span.innerHTML = spa.original
+    }
+  }
 }

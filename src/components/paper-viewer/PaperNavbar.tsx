@@ -120,17 +120,17 @@ const useStyles = makeStyles((theme: Theme) =>
 )
 
 export function PaperNavbar({
-  children,
   meta,
   id,
+  children,
   onHighLight
 }: React.PropsWithChildren<{ meta: PaperMeta | null ,id: string,onHighLight:(a: Answer)=>void}>) {
   const classes = useStyles()
   const theme = useTheme()
   const [openLeft, setOpenLeft] = React.useState(false)
   const [question,setQuestion] = useState<string | null>(null)
-  const [openRight, setOpenRight] = React.useState(false)
 
+  const [openRight, setOpenRight] = React.useState(false)
   const handleDrawerOpenLeft = () => {
     setOpenLeft(true)
   }
@@ -231,7 +231,9 @@ export function PaperNavbar({
         </div>
 
         <Divider />
-          <QAAnswerView onHightLight={onHighLight} id={id} question={question}/>
+          <QAAnswerView onHightLight={async (a)=>{
+            onHighLight(a)
+          }} id={id} question={question}/>
       </Drawer>
     </div>
   )

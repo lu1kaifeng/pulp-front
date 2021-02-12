@@ -85,12 +85,12 @@ export const QAAnswerView: React.FC<{
               <Accordion
                 square
                 expanded={expanded === `panel${index}`}
+                onClick={()=>onHightLight(m)}
                 onChange={handleChange(`panel${index}`)}
               >
                 <AccordionSummary
                   aria-controls="panel1d-content"
                   id="panel1d-header"
-                  onClick={()=>onHightLight(m)}
                 >
                   <Typography>
                     {m.answer !== null ? m.answer : 'No Answer'}
