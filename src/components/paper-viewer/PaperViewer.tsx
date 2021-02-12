@@ -48,4 +48,3 @@ export const PaperViewer: React.FC<{ src: string; id: string; onRenderSuccess:(h
     </Container>
   )
 }
-

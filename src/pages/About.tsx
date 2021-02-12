@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react'
 import { useHistory } from 'react-router-dom'
 
-export default function About(){
+const About: React.FC = () => {
   const history = useHistory()
 
   return (
@@ -24,3 +24,4 @@ export default function About(){
     </Fragment>
   )
 }
+ export default About
